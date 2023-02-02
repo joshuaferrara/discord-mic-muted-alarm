@@ -53,18 +53,7 @@ module.exports = class YoureMuted {
         this.reloadAudio();
 
         // Run main loop, which is just a little timer
-        this.mainLoopInterval = setInterval(() => {
-            // Find the mute button
-            let muteButtons = document.querySelectorAll('[aria-label="Mute"]');
-            if (muteButtons.length != 1) {
-                throw "Failed to load. Couldn't find the mute button.";
-            }
-            this.muteButton = muteButtons[0];
-
-            // Call the mutation observer function. If the user is muted _before_ the plugin
-            // is started, this'll ensure the timer get started up.
-            this.checkMuteButton();
-        }, 500);
+        this.mainLoopInterval = setInterval(this.checkMuteButton.bind(this), 500);
 
         this.log("info", "Loaded");
     }
@@ -80,13 +69,23 @@ module.exports = class YoureMuted {
      * Function that arms/disarms the alert based on the state of the "Mute" UI button.
      */
     checkMuteButton() {
+        // Find the mute button
+        let muteButtons = document.querySelectorAll('[aria-label="Mute"]');
+        if (muteButtons.length != 1) {
+            throw "Failed to load. Couldn't find the mute button.";
+        }
+        const muteButton = muteButtons[0];
+
+        // Little function to return true/false based on mute button state
+        const areWeMuted = () => (muteButton.getAttribute("aria-checked") === 'true');
+
         // Initialize data if we haven't done so yet
         if (this.lastButtonState == undefined) {
-            this.lastButtonState = this.areWeMuted();
+            this.lastButtonState = areWeMuted();
         }
 
         // Only arm/disarm on rising/falling edge
-        const newMutedState = this.areWeMuted();
+        const newMutedState = areWeMuted();
         if (this.lastButtonState == newMutedState) {
             // do nothing; muted state hasn't changed
             return;
@@ -135,7 +134,7 @@ module.exports = class YoureMuted {
      * Disarm the alert interval timer if one is set.
      */
     disarmAlert() {
-        if (this.mutedTimer) {
+        if (this.mutedTimer != undefined) {
             this.log("info", "Alert disarmed");
             clearInterval(this.mutedTimer);
             delete this.mutedTimer;
