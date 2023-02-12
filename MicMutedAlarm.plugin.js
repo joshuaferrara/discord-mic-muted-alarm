@@ -1,7 +1,7 @@
 /**
- * @name You're Muted
+ * @name Mic Muted Alarm
  * @author josh#7745
- * @description Notifies you when you've had yourself muted for a while
+ * @description Customizable alarm that notifies you when your mic has been muted for a while.
  * @version 1.0.0
  */
 module.exports = class YoureMuted {
