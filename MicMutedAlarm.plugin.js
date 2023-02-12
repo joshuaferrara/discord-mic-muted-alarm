@@ -7,7 +7,7 @@
 module.exports = class YoureMuted {
     // Plugin meta information
     meta = {
-        name: "YoureMuted"
+        name: "MicMutedAlarm"
     }
 
     // Settings storage. These are the default values until
